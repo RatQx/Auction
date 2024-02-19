@@ -1,0 +1,145 @@
+<form [formGroup]="auctionForm" (ngSubmit)="onSubmit()" class="container mt-5">
+  <h2 class="mb-4">Create Auction</h2>
+
+  <div class="mb-3">
+    <label for="name" class="form-label">Name:</label>
+    <input type="text" id="name" class="form-control" formControlName="name" />
+  </div>
+
+  <div class="mb-3">
+    <label for="country" class="form-label">Country:</label>
+    <select id="country" class="form-select" formControlName="country">
+      <option value="country1">Country 1</option>
+      <option value="country2">Country 2</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label for="city" class="form-label">City:</label>
+    <input type="text" id="city" class="form-control" formControlName="city" />
+  </div>
+
+  <div class="mb-3">
+    <label for="starting_price" class="form-label">Starting Price:</label>
+    <input
+      type="number"
+      id="starting_price"
+      class="form-control"
+      formControlName="starting_price"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="bid_ammount" class="form-label">Bid Amount:</label>
+    <input
+      type="number"
+      id="bid_ammount"
+      class="form-control"
+      formControlName="bid_ammount"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="min_buy_price" class="form-label">Min Buy Price:</label>
+    <input
+      type="number"
+      id="min_buy_price"
+      class="form-control"
+      formControlName="min_buy_price"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="auction_start_time" class="form-label"
+      >Auction Start Time:</label
+    >
+    <!-- now date foramt is 12h. redo to 24h-->
+    <input
+      type="datetime-local"
+      id="auction_start_time"
+      class="form-control"
+      formControlName="auction_start_time"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="auction_end_time" class="form-label">Auction End Time:</label>
+    <input
+      type="datetime-local"
+      id="auction_end_time"
+      class="form-control"
+      formControlName="auction_end_time"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="buy_now_price" class="form-label">Buy Now Price:</label>
+    <input
+      type="number"
+      id="buy_now_price"
+      class="form-control"
+      formControlName="buy_now_price"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="category" class="form-label">Category:</label>
+    <input
+      type="text"
+      id="category"
+      class="form-control"
+      formControlName="category"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="description" class="form-label">Description:</label>
+    <textarea
+      id="description"
+      class="form-control"
+      formControlName="description"
+    ></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label for="item_build_year" class="form-label">Item Build Year:</label>
+    <input
+      type="text"
+      id="item_build_year"
+      class="form-control"
+      formControlName="item_build_year"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="item_mass" class="form-label">Item Mass:</label>
+    <input
+      type="number"
+      id="item_mass"
+      class="form-control"
+      formControlName="item_mass"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="condition" class="form-label">Condition:</label>
+    <input
+      type="text"
+      id="condition"
+      class="form-control"
+      formControlName="condition"
+    />
+  </div>
+
+  <div class="mb-3">
+    <label for="material" class="form-label">Material:</label>
+    <input
+      type="text"
+      id="material"
+      class="form-control"
+      formControlName="material"
+    />
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+</form>

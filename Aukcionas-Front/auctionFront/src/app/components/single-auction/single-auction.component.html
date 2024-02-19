@@ -1,0 +1,38 @@
+<h2 mat-dialog-title>{{ data.product.name }} Details</h2>
+<mat-dialog-content>
+  <p>Time left: {{ demo }}</p>
+  <p>Auction name: {{ data.product.name }}</p>
+  <p>Auction country: {{ data.product.country }}</p>
+  <p>Auction city: {{ data.product.city }}</p>
+  <p>Stating price {{ data.product.starting_price }}</p>
+  <p>Minimal bid amount {{ data.product.bid_ammount }}</p>
+  <p>Min buy price {{ data.product.min_buy_price }}</p>
+  <p>
+    Current bid:
+    {{
+      data.product.bidding_amount_history[
+        data.product.bidding_amount_history.length - 1
+      ]
+    }}
+  </p>
+  <p>
+    Auction start time:
+    {{ data.product.auction_start_time | date : "yyyy-MM-dd hh:mm:ss" }}
+  </p>
+  <p>
+    Auction end time:
+    {{ data.product.auction_end_time | date : "yyyy-MM-dd hh:mm:ss" }}
+  </p>
+  <p>Buy now price: {{ data.product.buy_now_price }}</p>
+  <p>Category: {{ data.product.category }}</p>
+  <p>Description: {{ data.product.description }}</p>
+  <p>Year when item was made: {{ data.product.item_year }}</p>
+  <p>Item mass(aprox): {{ data.product.item_mass }}</p>
+  <p>Condition: {{ data.product.condition }}</p>
+  <p>Material: {{ data.product.material }}</p>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button>Bid now</button>
+  <button mat-button>Buy now</button>
+</mat-dialog-actions>
