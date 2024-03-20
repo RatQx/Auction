@@ -1,0 +1,177 @@
+<div *ngIf="auction">
+  <div class="row" style="padding-left: 20px; padding-top: 20px">
+    <div class="col-md-6">
+      <h2 class="text-center">{{ auction.name }} auction details</h2>
+      <div>
+        <h5>
+          Like this auction!
+          <button
+            class="btn"
+            [class.btn-success]="isAuctionLiked"
+            [class.btn-secondary]="!isAuctionLiked"
+            (click)="likeOrUnlikeAuction()"
+          >
+            {{ isAuctionLiked ? "Liked" : "Like" }}
+          </button>
+        </h5>
+        <h5>
+          Report this auction
+          <button (click)="openReportModal(auction.id!)">Report</button>
+        </h5>
+      </div>
+      <p style="font-size: 18px; font-weight: bold">
+        Time left:
+        <span class="span1" style="color: red; font-size: 20px">{{
+          timeDiff
+        }}</span>
+      </p>
+      <p>
+        Auction likes
+        <span>{{ auction.auction_likes ?? "0" }}</span>
+      </p>
+      <p>
+        Auction Start Time:
+        {{ auction.auction_start_time | date : "yyyy-MM-dd HH:mm:ss" }}
+      </p>
+      <p>
+        Auction End Time:
+        {{ auction.auction_end_time | date : "yyyy-MM-dd HH:mm:ss" }}
+      </p>
+      <p>Country: {{ auction.country }}</p>
+      <p>City: {{ auction.city }}</p>
+      <p>Category: {{ auction.category }}</p>
+      <p>Description: {{ auction.description }}</p>
+      <p>Item build year: {{ auction.item_build_year }}</p>
+      <p>Item mass: {{ auction.item_mass }}</p>
+      <p>Condition: {{ auction.condition }}</p>
+      <p>Material: {{ auction.material }}</p>
+    </div>
+    <div class="col-md-6">
+      <div>
+        <h3>Bidding Section</h3>
+        <p>Starting price: {{ auction.starting_price }}</p>
+        <p>Bid amount: {{ auction.bid_ammount }}</p>
+        <p>Buy now price: {{ auction.buy_now_price }}</p>
+        <p>
+          Current Bid:
+          <ng-container
+            *ngIf="
+              auction.bidding_amount_history &&
+                auction.bidding_amount_history.length > 0;
+              else noBids
+            "
+          >
+            {{
+              auction.bidding_amount_history[
+                auction.bidding_amount_history.length - 1
+              ]
+            }}
+          </ng-container>
+          <ng-template #noBids>No Bids</ng-template>
+        </p>
+        <p>Next Bid: {{ calculateNextBid() }}</p>
+        <button
+          class="btn btn-primary"
+          style="margin: 10px"
+          (click)="PlaceBid(auction.id!, calculateNextBid())"
+        >
+          Place Bid
+        </button>
+        <button class="btn btn-success" style="margin: 10px" (click)="buyNow()">
+          Buy Now
+        </button>
+      </div>
+      <div class="mt-4">
+        <h4>Bidding History</h4>
+        <div class="bidding-history-table">
+          <table class="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Bid Amount</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <ng-container *ngIf="auction">
+                <ng-container
+                  *ngFor="
+                    let index of reverseIndexArray(auction.auction_biders_list!)
+                  "
+                >
+                  <tr>
+                    <td>{{ auction.auction_biders_list![index] }}</td>
+                    <td>{{ auction.bidding_amount_history![index] }}</td>
+                    <td>
+                      {{
+                        auction.bidding_times_history![index] | date : "short"
+                      }}
+                    </td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container text-center mt-4" style="width: 50%">
+    <div class="row" style="width: 100%">
+      <div class="col-md-12">
+        <h3 class="mb-4" style="font-weight: bold">Auction comments</h3>
+        <ul class="list-unstyled comments-list">
+          <li *ngFor="let comment of comments" class="comment">
+            <div class="comment-header">
+              <strong>{{ comment.username }}</strong> -
+              <span class="comment-date">{{
+                comment.date | date : "short"
+              }}</span>
+            </div>
+            <hr class="comment-divider" />
+            <p class="comment-text">{{ comment.text }}</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div *ngIf="isAuthenticated" class="mt-4" style="width: 100%">
+      <form
+        [formGroup]="commentForm"
+        (ngSubmit)="onSubmitComment()"
+        class="comment-form"
+      >
+        <div class="form-group">
+          <label
+            for="text"
+            class="add-comment-label"
+            style="margin-bottom: 10px"
+            >Add Comment:</label
+          >
+          <textarea
+            formControlName="text"
+            class="form-control comment-textarea"
+            rows="4"
+          ></textarea>
+          <div
+            class="invalid-feedback"
+            *ngIf="
+              commentForm.get('text')!.invalid &&
+              (commentForm.get('text')!.dirty ||
+                commentForm.get('text')!.touched)
+            "
+          >
+            <div *ngIf="commentForm.get('text')!.hasError('required')">
+              Comment is required.
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin: 10px">
+          Submit Comment
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

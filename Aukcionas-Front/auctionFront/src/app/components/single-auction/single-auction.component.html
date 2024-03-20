@@ -1,7 +1,11 @@
 <h2 mat-dialog-title>{{ data.product.name }} Details</h2>
 <mat-dialog-content>
-  <p>Time left: {{ demo }}</p>
-  <p>Auction name: {{ data.product.name }}</p>
+  <p>
+    Time left: <span class="span1">{{ timeDiff }}</span>
+  </p>
+  <p>
+    Auction name: <span>{{ data.product.name }}</span>
+  </p>
   <p>Auction country: {{ data.product.country }}</p>
   <p>Auction city: {{ data.product.city }}</p>
   <p>Stating price {{ data.product.starting_price }}</p>
@@ -17,11 +21,11 @@
   </p>
   <p>
     Auction start time:
-    {{ data.product.auction_start_time | date : "yyyy-MM-dd hh:mm:ss" }}
+    {{ data.product.auction_start_time | date : "yyyy-MM-dd hh:mm" }}
   </p>
   <p>
     Auction end time:
-    {{ data.product.auction_end_time | date : "yyyy-MM-dd hh:mm:ss" }}
+    {{ data.product.auction_end_time | date : "yyyy-MM-dd hh:mm" }}
   </p>
   <p>Buy now price: {{ data.product.buy_now_price }}</p>
   <p>Category: {{ data.product.category }}</p>
@@ -33,6 +37,5 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Close</button>
-  <button mat-button>Bid now</button>
-  <button mat-button>Buy now</button>
+  <button mat-button (click)="bidNow()">Bid now</button>
 </mat-dialog-actions>

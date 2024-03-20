@@ -1,0 +1,106 @@
+<div class="form-container">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="register-form">
+    <div class="card card-container">
+      <img
+        id="profile-img"
+        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+        class="profile-img-card"
+      />
+    </div>
+    <div class="form-group">
+      <div>
+        <h2>Register</h2>
+      </div>
+      <div class="alert alert-danger" *ngIf="isSignUpFailed">
+        {{ errorMessage }}
+      </div>
+      <label for="username">Username</label>
+      <input
+        type="text"
+        class="form-control"
+        formControlName="username"
+        [required]="true"
+        minlength="3"
+        maxlength="50"
+      />
+      <div class="alert-danger" *ngIf="form.get('username')?.touched">
+        <div
+          *ngIf="form.get('username')?.hasError('required')"
+          class="alert alert-danger"
+        >
+          Username is required
+        </div>
+        <div
+          *ngIf="form.get('username')?.hasError('minlength')"
+          class="alert alert-danger"
+        >
+          Username must be at least 3 characters long
+        </div>
+        <div
+          *ngIf="form.get('username')?.hasError('maxlength')"
+          class="alert alert-danger"
+        >
+          Username cannot be more than 50 characters long
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        formControlName="email"
+        [required]="true"
+        pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}"
+      />
+      <div class="alert-danger" *ngIf="form.get('email')?.touched">
+        <div
+          *ngIf="form.get('email')?.hasError('required')"
+          class="alert alert-danger"
+        >
+          Email is required
+        </div>
+        <div
+          *ngIf="form.get('email')?.hasError('pattern')"
+          class="alert alert-danger"
+        >
+          Invalid email format
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        formControlName="password"
+        required
+        minlength="8"
+      />
+      <div class="alert-danger" *ngIf="form.get('password')?.touched">
+        <div
+          *ngIf="form.get('password')?.hasError('required')"
+          class="alert alert-danger"
+        >
+          Password is required.
+        </div>
+        <div
+          *ngIf="form.get('password')?.hasError('minlength')"
+          class="alert alert-danger"
+        >
+          Password must be at least 8 characters long.
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <button
+        class="btn btn-primary btn-block"
+        style="margin-top: 10px"
+        (click)="onSubmit()"
+      >
+        Register
+      </button>
+    </div>
+  </form>
+</div>

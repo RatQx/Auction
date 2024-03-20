@@ -1,22 +1,74 @@
 <form [formGroup]="auctionForm" (ngSubmit)="onSubmit()" class="container mt-5">
   <h2 class="mb-4">Create Auction</h2>
-
+  <!--
   <div class="mb-3">
+    <label for="pictures" class="form-label">Pictures:</label>
+    <input
+      type="file"
+      id="pictures"
+      class="form-control"
+      formControlName="pictures"
+      multiple
+    />
+  </div>
+-->
+  <div class="form-group">
     <label for="name" class="form-label">Name:</label>
-    <input type="text" id="name" class="form-control" formControlName="name" />
+    <input
+      type="text"
+      id="name"
+      class="form-control"
+      formControlName="name"
+      required
+      minlength="3"
+      maxlength="200"
+    />
+    <p
+      *ngIf="
+        registerFormControl['name'].touched &&
+        registerFormControl['name'].errors
+      "
+    >
+      Name must be between 3 and 200 characters.
+    </p>
   </div>
 
   <div class="mb-3">
     <label for="country" class="form-label">Country:</label>
-    <select id="country" class="form-select" formControlName="country">
+    <select id="country" class="form-control" formControlName="country">
       <option value="country1">Country 1</option>
       <option value="country2">Country 2</option>
     </select>
+    <p
+      *ngIf="
+        registerFormControl['country'].touched &&
+        registerFormControl['country'].errors
+      "
+    >
+      Country can't be empty
+    </p>
   </div>
 
   <div class="mb-3">
     <label for="city" class="form-label">City:</label>
-    <input type="text" id="city" class="form-control" formControlName="city" />
+    <input
+      type="text"
+      id="city"
+      class="form-control"
+      formControlName="city"
+      pattern="[A-Za-z]+"
+      required
+      minlength="1"
+      maxlength="200"
+    />
+    <p
+      *ngIf="
+        registerFormControl['city'].touched &&
+        registerFormControl['city'].errors
+      "
+    >
+      City can't be empty and should contain only characters.
+    </p>
   </div>
 
   <div class="mb-3">
@@ -26,7 +78,24 @@
       id="starting_price"
       class="form-control"
       formControlName="starting_price"
+      required
+      [step]="0.01"
     />
+    <p
+      *ngIf="
+        registerFormControl['starting_price'].touched &&
+        registerFormControl['starting_price'].errors?.['required']
+      "
+    >
+      Starting price can't be empty
+    </p>
+    <p
+      *ngIf="
+        registerFormControl['starting_price'].errors?.['pattern']
+      "
+    >
+      Starting price must be a number
+    </p>
   </div>
 
   <div class="mb-3">
@@ -36,7 +105,16 @@
       id="bid_ammount"
       class="form-control"
       formControlName="bid_ammount"
+      required
     />
+    <p
+      *ngIf="
+        registerFormControl['bid_ammount'].touched &&
+        registerFormControl['bid_ammount'].errors
+      "
+    >
+      Bid amount can't be empty
+    </p>
   </div>
 
   <div class="mb-3">
@@ -46,30 +124,31 @@
       id="min_buy_price"
       class="form-control"
       formControlName="min_buy_price"
+      required
+      [step]="0.01"
     />
-  </div>
-
-  <div class="mb-3">
-    <label for="auction_start_time" class="form-label"
-      >Auction Start Time:</label
+    <p
+      *ngIf="
+        registerFormControl['min_buy_price'].touched &&
+        registerFormControl['min_buy_price'].errors?.['required']
+      "
     >
-    <!-- now date foramt is 12h. redo to 24h-->
-    <input
-      type="datetime-local"
-      id="auction_start_time"
-      class="form-control"
-      formControlName="auction_start_time"
-    />
-  </div>
-
-  <div class="mb-3">
-    <label for="auction_end_time" class="form-label">Auction End Time:</label>
-    <input
-      type="datetime-local"
-      id="auction_end_time"
-      class="form-control"
-      formControlName="auction_end_time"
-    />
+      Min buy price can't be empty
+    </p>
+    <p
+      *ngIf="
+        registerFormControl['min_buy_price'].errors?.['pattern']
+      "
+    >
+      Min buy price must be a number
+    </p>
+    <p
+      *ngIf="
+        registerFormControl['min_buy_price'].errors?.['invalidPrice']
+      "
+    >
+      Min buy price must be greater than the starting price
+    </p>
   </div>
 
   <div class="mb-3">
@@ -79,17 +158,98 @@
       id="buy_now_price"
       class="form-control"
       formControlName="buy_now_price"
+      required
+      [step]="0.01"
     />
+    <p
+      *ngIf="
+        registerFormControl['buy_now_price'].touched &&
+        registerFormControl['buy_now_price'].errors?.['required']
+      "
+    >
+      Buy now price can't be empty
+    </p>
+    <p
+      *ngIf="
+        registerFormControl['buy_now_price'].errors?.['pattern']
+      "
+    >
+      Buy now price must be a number
+    </p>
+    <p
+      *ngIf="
+        registerFormControl['buy_now_price'].errors?.['invalidPrice']
+      "
+    >
+      Buy now price must be greater than the starting price
+    </p>
+  </div>
+
+  <div class="mb-3">
+    <label for="auction_start_time" class="form-label"
+      >Auction Start Time:</label
+    >
+    <input
+      type="datetime-local"
+      id="auction_start_time"
+      class="form-control"
+      formControlName="auction_start_time"
+    />
+    <p *ngIf="registerFormControl['auction_start_time'].errors?.['required']">
+      Auction start time is required.
+    </p>
+    <p
+      *ngIf="registerFormControl['auction_start_time'].errors?.['invalidAuctionStartTime']"
+    >
+      Auction start time must be within the range of 1 minute ago to 30 days
+      from now.
+    </p>
+  </div>
+  <div class="mb-3">
+    <label for="auction_end_time" class="form-label">Auction End Time:</label>
+    <input
+      type="datetime-local"
+      id="auction_end_time"
+      class="form-control"
+      formControlName="auction_end_time"
+    />
+    <p *ngIf="registerFormControl['auction_end_time'].errors?.['required']">
+      Auction end time is required.
+    </p>
+    <p
+      *ngIf="registerFormControl['auction_end_time'].errors?.['invalidAuctionEndTime']"
+    >
+      Auction end time must be at least 1 day after the auction start time and
+      within 30 days of the auction start time.
+    </p>
   </div>
 
   <div class="mb-3">
     <label for="category" class="form-label">Category:</label>
-    <input
-      type="text"
+    <select
       id="category"
       class="form-control"
       formControlName="category"
-    />
+      required
+    >
+      <option value="Art">Art</option>
+      <option value="Technology">Technology</option>
+      <option value="Jewellery">Jewellery</option>
+      <option value="Transportation">Transportation</option>
+      <option value="Fashion">Fashion</option>
+      <option value="Sports">Sports</option>
+      <option value="History">History</option>
+      <option value="Toys">Toys</option>
+      <option value="Other">Other</option>
+    </select>
+    <p
+      *ngIf="
+        registerFormControl['category'].touched &&
+        registerFormControl['category'].errors
+      "
+    >
+      Category can't be empty
+    </p>
   </div>
 
   <div class="mb-3">
@@ -98,7 +258,18 @@
       id="description"
       class="form-control"
       formControlName="description"
+      required
+      minlength="3"
+      maxlength="300"
     ></textarea>
+    <p
+      *ngIf="
+        registerFormControl['description'].touched &&
+        registerFormControl['description'].errors
+      "
+    >
+      Description must be between 3 and 300 characters.
+    </p>
   </div>
 
   <div class="mb-3">
@@ -108,7 +279,16 @@
       id="item_build_year"
       class="form-control"
       formControlName="item_build_year"
+      required
     />
+    <p
+      *ngIf="
+        registerFormControl['item_build_year'].touched &&
+        registerFormControl['item_build_year'].errors
+      "
+    >
+      Item biuld year can't be empty
+    </p>
   </div>
 
   <div class="mb-3">
@@ -118,28 +298,85 @@
       id="item_mass"
       class="form-control"
       formControlName="item_mass"
+      required
     />
+    <p
+      *ngIf="
+        registerFormControl['item_mass'].touched &&
+        registerFormControl['item_mass'].errors
+      "
+    >
+      Item mass can't be empty
+    </p>
   </div>
 
   <div class="mb-3">
     <label for="condition" class="form-label">Condition:</label>
-    <input
-      type="text"
+    <select
       id="condition"
       class="form-control"
       formControlName="condition"
-    />
+      required
+    >
+      <option value="New">New</option>
+      <option value="Slightly used">Slightly used</option>
+      <option value="Worn">Worn</option>
+      <option value="Restored">Restored</option>
+      <option value="Damaged">Damaged</option>
+    </select>
+    <p
+      *ngIf="
+        registerFormControl['condition'].touched &&
+        registerFormControl['condition'].errors
+      "
+    >
+      Condition can't be empty
+    </p>
   </div>
 
   <div class="mb-3">
     <label for="material" class="form-label">Material:</label>
-    <input
-      type="text"
+    <select
       id="material"
       class="form-control"
       formControlName="material"
-    />
+      required
+    >
+      <option value="Metal">Metal</option>
+      <option value="Plastic">Plastic</option>
+      <option value="Rubber">Rubber</option>
+      <option value="Glass">Glass</option>
+      <option value="Wood">Wood</option>
+      <option value="Multiple materials">Multiple materials</option>
+      <option value="Other">Other</option>
+    </select>
+    <p
+      *ngIf="
+        registerFormControl['material'].touched &&
+        registerFormControl['material'].errors
+      "
+    >
+      Material can't be empty
+    </p>
   </div>
 
-  <button type="submit" class="btn btn-primary">Submit</button>
+  <p>
+    <button
+      class="btn btn-success add-record-button"
+      type="submit"
+      style="margin-top: 20px"
+      [disabled]="auctionForm.invalid"
+    >
+      {{ submitButton }}
+    </button>
+  </p>
+  <p>
+    <button
+      type="button"
+      class="btn btn-outline-danger"
+      [routerLink]="['/auction']"
+    >
+      Back
+    </button>
+  </p>
 </form>

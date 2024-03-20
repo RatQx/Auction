@@ -1,0 +1,40 @@
+.report-modal {
+  width: 400px; /* Adjust width as needed */
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+.report-modal h3 {
+  margin-bottom: 10px;
+}
+
+.report-modal p {
+  margin-bottom: 10px;
+}
+
+.options {
+  margin-bottom: 10px;
+}
+
+.mat-radio-button {
+  display: block; /* Display each radio button on a new line */
+}
+
+.submit-button {
+  text-align: center; /* Center the submit button */
+}
+
+.submit-button button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button button:hover {
+  background-color: #0056b3;
+}

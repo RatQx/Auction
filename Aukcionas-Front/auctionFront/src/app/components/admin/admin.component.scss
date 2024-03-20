@@ -1,0 +1,29 @@
+.admin-banner {
+  background-color: #003e80;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.admin-banner h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.table {
+  width: 100%; /* Limit the width of the table */
+  max-width: 600px; /* Set maximum width */
+  border-collapse: collapse; /* Collapse borders */
+}
+
+.table th,
+.table td {
+  border: 1px solid #ddd; /* Add borders between cells */
+  padding: 8px; /* Add padding to cells */
+}
+
+.selected-row {
+  border: 2px solid red;
+}

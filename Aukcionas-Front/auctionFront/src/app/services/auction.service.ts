@@ -1,40 +1,60 @@
 import { Injectable } from '@angular/core';
 import { Auction, GetAuctionReq } from '../models/auction.model';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject, delay } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { objectToParams } from '../utils/utils';
-import { request } from 'http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuctionService {
-  private url = 'Auction';
+  private baseApiUrl: string = environment.apiUrl + '/Auction';
+  private populateFormSubject = new Subject<any>();
+  private updateListSubject = new Subject<any>();
   constructor(private http: HttpClient) {}
 
   public getAuctions(req?: GetAuctionReq): Observable<Auction[]> {
-    return this.http.get<Auction[]>(`${environment.apiUrl}/${this.url}`, {
+    return this.http.get<Auction[]>(`${this.baseApiUrl}`, {
       params: objectToParams(req),
     });
   }
 
-  public updateAuction(id: number): Observable<Auction[]> {
-    const url = `${environment.apiUrl}/${this.url}/Update`;
-    return this.http.put<Auction[]>(url, { id });
-    //return this.http.put<Auction[]>(`${environment.apiUrl}/${this.url}`,auction);
+  likeAuction(auctionId: number): Observable<any> {
+    return this.http.post(`${this.baseApiUrl}/${auctionId}/like`, []);
   }
 
+  unlikeAuction(auctionId: number): Observable<any> {
+    return this.http.post(`${this.baseApiUrl}/${auctionId}/unlike`, []);
+  }
+  getAuction(id: number): Observable<Auction> {
+    const url = `${this.baseApiUrl}/${id}`;
+    return this.http.get<Auction>(url);
+  }
+
+  updateAuction(auction: Auction) {
+    return this.http.put(this.baseApiUrl + auction.id, auction);
+  }
   public createAuction(auction: Auction): Observable<Auction[]> {
-    return this.http.post<Auction[]>(
-      `${environment.apiUrl}/${this.url}`,
-      auction
-    );
+    return this.http.post<Auction[]>(`${this.baseApiUrl}`, auction);
   }
 
   public deleteAuction(auction: Auction): Observable<Auction[]> {
-    return this.http.delete<Auction[]>(
-      `${environment.apiUrl}/${this.url}/${auction.id}`
-    );
+    return this.http.delete<Auction[]>(`${this.baseApiUrl}/${auction.id}`);
+  }
+
+  sendPopulateForm() {
+    return this.populateFormSubject.asObservable();
+  }
+  populateForm(id: number) {
+    this.populateFormSubject.next(id);
+  }
+
+  updateList() {
+    this.updateListSubject.next(true);
+  }
+
+  sendUpdateList() {
+    return this.updateListSubject.asObservable();
   }
 }

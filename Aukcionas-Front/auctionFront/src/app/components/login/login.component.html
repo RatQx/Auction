@@ -1,0 +1,138 @@
+<div class="col-md-12">
+  <div class="card card-container">
+    <img
+      id="profile-img"
+      src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+      class="profile-img-card"
+    />
+    <form [formGroup]="form">
+      <div class="form-group">
+        <div>
+          <h2>Login</h2>
+        </div>
+        <div class="alert alert-danger" *ngIf="isLoginFailed">
+          {{ errorMessage }}
+        </div>
+        <label for="username">Username</label>
+        <input
+          type="text"
+          class="form-control"
+          formControlName="username"
+          [required]="true"
+          minlength="3"
+          maxlength="50"
+        />
+        <div class="alert-danger" *ngIf="form.get('username')?.touched">
+          <div
+            *ngIf="form.get('username')?.hasError('required')"
+            class="alert alert-danger"
+          >
+            Username is required
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          formControlName="password"
+          required
+          minlength="8"
+        />
+        <div class="alert-danger" *ngIf="form.get('password')?.touched">
+          <div
+            *ngIf="form.get('password')?.hasError('required')"
+            class="alert alert-danger"
+          >
+            Password is required.
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <button
+          class="btn btn-primary btn-block"
+          style="margin-top: 10px"
+          (click)="onSubmit()"
+        >
+          Login
+        </button>
+        <br />
+        <button
+          class="btn btn-link p-0 text-decoration-none"
+          data-bs-toggle="modal"
+          data-bs-target="#resetPasswordModal"
+        >
+          Forgot Password?
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+<!-- ---------------------------------------------------------------------------------------------->
+<div
+  *ngIf="!emailSent"
+  class="modal fade"
+  id="resetPasswordModal"
+  tabindex="-1"
+  aria-labelledby="resetPasswordModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resetPasswordModalLabel">Password Reset</h5>
+      </div>
+      <div class="modal-body px-5">
+        <ng-container *ngIf="!emailSent">
+          <p class="card-text py-2">
+            Enter you'r email adress. The password reset link will be sent to
+            you'r email.
+          </p>
+          <div class="form-outline">
+            <input
+              type="email"
+              id="typeEmail"
+              class="form-control my-3"
+              [(ngModel)]="resetPasswordEmail"
+              (ngModelChange)="checkValidEmail($event)"
+            />
+            <label class="form-label" for="typeEmail">Email address</label>
+            <small *ngIf="!resetPasswordEmail" class="text-danger">
+              *Email is required*
+            </small>
+            <small
+              *ngIf="!isValidEmail && resetPasswordEmail"
+              class="text-danger"
+            >
+              *Email is invalid*
+            </small>
+          </div>
+          <button
+            class="btn btn-primary w-100"
+            type="button"
+            (click)="resetPasswordSend()"
+          >
+            Reset password
+          </button>
+        </ng-container>
+        <ng-container *ngIf="emailResetInvalid">
+          <div class="alert alert-danger mt-3">
+            {{ displayMessageEmail }}
+          </div>
+        </ng-container>
+        <ng-container *ngIf="emailSent">
+          <div class="alert alert-success mt-3">
+            {{ displayMessageEmail }}
+          </div>
+        </ng-container>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

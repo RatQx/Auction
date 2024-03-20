@@ -24,6 +24,9 @@ export class Auction {
   condition?: string;
   material?: string;
   auction_likes?: number;
+  auction_comment_list?: string[];
+  auction_comment_users?: string[];
+  auction_likes_list?: string[];
 }
 
 export type GetAuctionReq = { name?: string };

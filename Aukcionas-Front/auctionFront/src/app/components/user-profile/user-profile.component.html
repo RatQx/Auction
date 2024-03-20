@@ -1,0 +1,228 @@
+<div class="container mt-5">
+  <h2>User Information</h2>
+
+  <div *ngIf="!showEditForm">
+    <div class="mb-3">
+      <label for="userName" class="form-label">Username</label>
+      <div class="form-control">{{ userInfo.userName ?? "" }}</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <div class="form-control">{{ userInfo.email ?? "" }}</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <div class="form-control">{{ userInfo.name ?? "" }}</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="surname" class="form-label">Surname</label>
+      <div class="form-control">{{ userInfo.surname ?? "" }}</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="phoneNumber" class="form-label">Phone number</label>
+      <div class="form-control">{{ userInfo.phoneNumber ?? "" }}</div>
+    </div>
+
+    <div class="mb-3">
+      <button class="btn btn-primary" (click)="toggleEditForm()">
+        Edit Information
+      </button>
+    </div>
+
+    <div class="mb-3">
+      <button class="btn btn-primary mt-3" (click)="toggleAuctionsWonTable()">
+        {{ showAuctionsWonTable ? "Hide Auctions Won" : "Show Auctions Won" }}
+      </button>
+
+      <table class="table mt-3" *ngIf="showAuctionsWonTable">
+        <thead>
+          <tr>
+            <th>Auction Id</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let auction of userInfo.auctions_Won">
+            <td>
+              <a [routerLink]="['/auction-bid', auction]">{{ auction }}</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mb-3">
+      <button class="btn btn-primary mt-3" (click)="toggleLikedAuctionsTable()">
+        {{
+          showLikedAuctionsTable ? "Hide Liked Auctions" : "Show Liked Auctions"
+        }}
+      </button>
+
+      <table
+        class="table mt-3"
+        *ngIf="showLikedAuctionsTable"
+        style="margin-bottom: 50px"
+      >
+        <thead>
+          <tr>
+            <th>Auction</th>
+            <th>Remove from liked</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let auction of userInfo.liked_Auctions">
+            <td>
+              <a [routerLink]="['/auction-bid', auction]">{{ auction }}</a>
+            </td>
+            <td>
+              <button (click)="unlikeAuction(auction)">Unlke</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <form *ngIf="showEditForm" (ngSubmit)="submitForm()" #userForm="ngForm">
+    <div class="mb-3">
+      <label for="userName" class="form-label">Username</label>
+      <input
+        type="text"
+        class="form-control"
+        id="userName"
+        name="userName"
+        [(ngModel)]="userInfo.userName"
+        required
+        minlength="3"
+        maxlength="50"
+      />
+      <div
+        *ngIf="
+          userForm.controls['userName'].invalid &&
+          (userForm.controls['userName'].dirty ||
+            userForm.controls['userName'].touched)
+        "
+      >
+        <div *ngIf="userForm.controls['userName'].hasError('required')">
+          Username is required.
+        </div>
+        <div *ngIf="userForm.controls['userName'].hasError('minlength')">
+          Username must be at least 3 characters.
+        </div>
+        <div *ngIf="userForm.controls['userName'].hasError('maxlength')">
+          Username cannot exceed 50 characters.
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        [(ngModel)]="userInfo.email"
+        required
+        email
+      />
+      <div
+        *ngIf="
+          userForm.controls['email'].invalid &&
+          (userForm.controls['email'].dirty ||
+            userForm.controls['email'].touched)
+        "
+      >
+        <div *ngIf="userForm.controls['email'].hasError('required')">
+          Email is required.
+        </div>
+        <div *ngIf="userForm.controls['email'].hasError('email')">
+          Invalid email format.
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        name="name"
+        [(ngModel)]="userInfo.name"
+        minlength="3"
+        maxlength="50"
+      />
+      <div
+        *ngIf="
+          userForm.controls['name'].dirty || userForm.controls['name'].touched
+        "
+      >
+        <div *ngIf="userForm.controls['name'].hasError('minlength')">
+          Name must be at least 3 characters.
+        </div>
+        <div *ngIf="userForm.controls['name'].hasError('maxlength')">
+          Name cannot exceed 50 characters.
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="surname" class="form-label">Surname</label>
+      <input
+        type="text"
+        class="form-control"
+        id="surname"
+        name="surname"
+        [(ngModel)]="userInfo.surname"
+        minlength="3"
+        maxlength="50"
+      />
+      <div
+        *ngIf="
+          userForm.controls['surname'].dirty ||
+          userForm.controls['surname'].touched
+        "
+      >
+        <div *ngIf="userForm.controls['surname'].hasError('minlength')">
+          Surname must be at least 3 characters.
+        </div>
+        <div *ngIf="userForm.controls['surname'].hasError('maxlength')">
+          Surname cannot exceed 50 characters.
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="phoneNumber" class="form-label">Phone number</label>
+      <input
+        type="tel"
+        class="form-control"
+        id="phoneNumber"
+        name="phoneNumber"
+        [(ngModel)]="userInfo.phoneNumber"
+        pattern="^(\+\d{9}|\d{9}|)$"
+      />
+      <div
+        *ngIf="
+          userForm.controls['phoneNumber'].dirty ||
+          userForm.controls['phoneNumber'].touched
+        "
+      >
+        <div *ngIf="userForm.controls['phoneNumber'].hasError('pattern')">
+          Invalid phone number format.
+        </div>
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="userForm.invalid">
+      Save Changes
+    </button>
+    <button type="button" class="btn btn-secondary" (click)="toggleEditForm()">
+      Cancel
+    </button>
+  </form>
+</div>

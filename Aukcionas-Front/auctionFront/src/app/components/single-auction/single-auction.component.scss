@@ -1,0 +1,23 @@
+h2 {
+  font-weight: bold;
+  color: red;
+}
+
+mat-dialog-content {
+  p {
+    color: #55534b;
+
+    .span1 {
+      color: #e85a4f;
+    }
+    span {
+      color: #d8c3a5;
+    }
+  }
+}
+
+mat-dialog-actions {
+  button {
+    color: #cc0479;
+  }
+}

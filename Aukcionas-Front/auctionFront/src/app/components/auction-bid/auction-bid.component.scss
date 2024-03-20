@@ -1,0 +1,60 @@
+.bidding-history-table {
+  max-height: 300px;
+  overflow-y: auto;
+}
+.comments-list {
+  text-align: left;
+}
+
+.comment {
+  background-color: #ceb4b4;
+  border: 1px solid #1a1111;
+  border-radius: 10px;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+.comment-header {
+  margin-bottom: 5px;
+}
+
+.comment-date {
+  color: #380700;
+  font-size: 0.8em;
+}
+
+.comment-text {
+  margin-top: 5px;
+}
+
+.add-comment-label {
+  font-weight: bold;
+}
+
+.comment-form {
+  margin-top: 20px;
+}
+
+.comment-textarea {
+  border: 1px solid #000000;
+  border-radius: 10px;
+  resize: none;
+}
+
+.btn-primary {
+  background-color: #007bff;
+  border-color: #000000;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.comment-divider {
+  margin: 10px 0; /* Adjust margin as needed */
+  border: 0;
+  border-top: 1px solid #000000; /* Divider color */
+}

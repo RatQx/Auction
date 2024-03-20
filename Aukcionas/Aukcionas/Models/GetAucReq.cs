@@ -14,6 +14,8 @@ public class GetAucReq()
         {
             predicates.Add(x => x.name.Contains(name));
         }
+        predicates.Add(x => x.auction_end_time.AddHours(1) >= DateTime.UtcNow);
+
         return Extensions.CombinePredicatesWithAnd(predicates);
 
     }

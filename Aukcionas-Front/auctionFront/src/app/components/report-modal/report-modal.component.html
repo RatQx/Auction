@@ -1,0 +1,24 @@
+<div class="report-modal">
+  <h3>Report auction</h3>
+  <p>Please choose report option:</p>
+  <div class="options">
+    <mat-radio-group [(ngModel)]="selectedOption">
+      <mat-radio-button value="fraudActivity">Fraud activity</mat-radio-button>
+    </mat-radio-group>
+  </div>
+  <div class="options">
+    <mat-radio-group [(ngModel)]="selectedOption">
+      <mat-radio-button value="inappropriateAuction"
+        >Inappropriate auction</mat-radio-button
+      >
+    </mat-radio-group>
+  </div>
+  <div class="options">
+    <mat-radio-group [(ngModel)]="selectedOption">
+      <mat-radio-button value="other">Other</mat-radio-button>
+    </mat-radio-group>
+  </div>
+  <div class="submit-button">
+    <button mat-button (click)="submit()">Submit</button>
+  </div>
+</div>

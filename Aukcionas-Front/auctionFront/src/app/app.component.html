@@ -1,6 +1,71 @@
 <router-outlet>
-  <h1>{{ title }}</h1>
-  <nav>
-    <button routerLink="auction">Auction</button>
+  <nav class="navbar navbar-expand-lg custom-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Aukcionai</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#"
+              >Pagrindinis</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="auction"
+              >Vykstantys aukcionai</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="create-auction"
+              >Sukurti aukciona</a
+            >
+          </li>
+
+          <li class="nav-item" *ngIf="!isLoged">
+            <a class="nav-link active" aria-current="page" href="login"
+              >Login</a
+            >
+          </li>
+          <li class="nav-item" *ngIf="!isLoged">
+            <a class="nav-link active" aria-current="page" href="register"
+              >Register</a
+            >
+          </li>
+          <li class="nav-item flare" *ngIf="isLoged">
+            <a class="nav-link mx-2" href="" (click)="logOut()"
+              >Logout <span class="ms-2">&#x2192;</span></a
+            >
+          </li>
+          <li class="nav-item" *ngIf="isLoged == true">
+            <a class="nav-link active" aria-current="page" href="profile"
+              >Profilis</a
+            >
+          </li>
+          <li class="nav-item" *ngIf="isAdmin">
+            <a class="nav-link active" aria-current="page" routerLink="admin"
+              >Admin Page</a
+            >
+          </li>
+        </ul>
+        <form class="d-flex" role="search">
+          <input
+            type="text"
+            placeholder="Ieskoti aukcionu"
+            (keyup)="onSearch($event)"
+          />
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
   </nav>
 </router-outlet>

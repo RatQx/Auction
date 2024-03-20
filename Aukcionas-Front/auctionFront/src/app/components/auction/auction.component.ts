@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Auction } from '../../models/auction.model';
 import { AuctionService } from '../../services/auction.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { SingleAuctionComponent } from '../single-auction/single-auction.component';
 
@@ -25,11 +25,16 @@ export class AuctionComponent {
   constructor(
     private auctionService: AuctionService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private route: ActivatedRoute
   ) {}
   ngOnInit(): void {
-    this.getData();
+    this.getData('');
     console.log(window.navigator.language);
+    this.route.queryParams.subscribe((params) => {
+      const searchName = params['name'] || '';
+      this.getData(searchName);
+    });
   }
   updateAuctionList(auction: Auction[]) {
     this.auctions = auction;
@@ -38,13 +43,8 @@ export class AuctionComponent {
     this.router.navigate(['create-auction']);
   }
 
-  editAuction(id: number) {
-    this.auctionService.updateAuction(id);
-  }
-
-  getData() {
-    this.auctionService.getAuctions({ name: '' }).subscribe((result) => {
-      //filters get auction by name
+  getData(name: string) {
+    this.auctionService.getAuctions({ name }).subscribe((result) => {
       this.auctions = result;
     });
   }
@@ -52,7 +52,7 @@ export class AuctionComponent {
   openDetailsModal(product: any): void {
     console.log(product);
     this.dialog.open(SingleAuctionComponent, {
-      width: '400px', // Adjust the width as needed
+      width: '400px',
       data: { product },
     });
   }
