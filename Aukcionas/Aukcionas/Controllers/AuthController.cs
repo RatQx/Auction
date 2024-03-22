@@ -9,7 +9,6 @@ using Aukcionas.Models;
 using Aukcionas.Utils;
 using Aukcionas.Data;
 using Microsoft.EntityFrameworkCore;
-using System.Net.Mail;
 
 
 namespace Aukcionas.Controllers
@@ -296,5 +295,6 @@ namespace Aukcionas.Controllers
                 return StatusCode(500, "An unexpected error occurred");
             }
         }
+
     }
 }

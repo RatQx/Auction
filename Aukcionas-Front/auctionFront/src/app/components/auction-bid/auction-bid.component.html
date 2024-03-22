@@ -51,35 +51,44 @@
         <h3>Bidding Section</h3>
         <p>Starting price: {{ auction.starting_price }}</p>
         <p>Bid amount: {{ auction.bid_ammount }}</p>
-        <p>Buy now price: {{ auction.buy_now_price }}</p>
-        <p>
-          Current Bid:
-          <ng-container
-            *ngIf="
-              auction.bidding_amount_history &&
-                auction.bidding_amount_history.length > 0;
-              else noBids
-            "
-          >
-            {{
-              auction.bidding_amount_history[
-                auction.bidding_amount_history.length - 1
-              ]
-            }}
-          </ng-container>
-          <ng-template #noBids>No Bids</ng-template>
-        </p>
+        <p *ngif="canBuyNow">Buy now price: {{ auction.buy_now_price }}</p>
         <p>Next Bid: {{ calculateNextBid() }}</p>
         <button
           class="btn btn-primary"
           style="margin: 10px"
           (click)="PlaceBid(auction.id!, calculateNextBid())"
+          *ngIf="!auction.auction_ended"
         >
           Place Bid
         </button>
-        <button class="btn btn-success" style="margin: 10px" (click)="buyNow()">
+        <button
+          *ngif="canBuyNow && !auction.auction_ended"
+          class="btn btn-success"
+          style="margin: 10px"
+          (click)="buyNow()"
+        >
           Buy Now
         </button>
+        <div
+          *ngIf="
+            auction.bidding_amount_history &&
+            auction.bidding_amount_history.length > 0
+          "
+          class="notification"
+        >
+          Current Bid:
+          {{
+            auction.bidding_amount_history[
+              auction.bidding_amount_history.length - 1
+            ]
+          }}
+        </div>
+        <div
+          *ngIf="auction.bidding_amount_history === null"
+          class="notification no-bids"
+        >
+          No bids
+        </div>
       </div>
       <div class="mt-4">
         <h4>Bidding History</h4>
@@ -96,7 +105,9 @@
               <ng-container *ngIf="auction">
                 <ng-container
                   *ngFor="
-                    let index of reverseIndexArray(auction.auction_biders_list!)
+                    let index of reverseIndexArray(
+                      auction.bidding_amount_history!
+                    )
                   "
                 >
                   <tr>

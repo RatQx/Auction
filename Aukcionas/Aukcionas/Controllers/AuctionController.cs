@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Identity;
+using Aukcionas.Utils;
 
 namespace Aukcionas.Controllers
 {
@@ -20,14 +21,16 @@ namespace Aukcionas.Controllers
         private readonly UserManager<ForumRestUser> _userManager;
         private readonly ILogger<AuthController> _logger;
         private readonly IHubContext<BiddingHub> _hubContext;
+        private readonly IConfiguration _configuration;
 
         //private readonly ICloudStorageService _cloudStorageService;
-        public AuctionController(UserManager<ForumRestUser> userManager,DataContext context, ILogger<AuthController> logger, IHubContext<BiddingHub> hubContext /**ICloudStorageService cloudStorageService**/)
+        public AuctionController(UserManager<ForumRestUser> userManager,DataContext context, ILogger<AuthController> logger, IConfiguration configuration, IHubContext<BiddingHub> hubContext /**ICloudStorageService cloudStorageService**/)
         {
             _userManager = userManager;
             _dataContext = context;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _hubContext = hubContext;
+            _configuration = configuration;
             //_cloudStorageService = cloudStorageService;
         }
         [HttpPut("{id:int}")]
@@ -35,7 +38,7 @@ namespace Aukcionas.Controllers
         [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(Auction))]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<List<Auction>>> UpdateAuction([FromBody] Auction auction)
+        public async Task<ActionResult<Auction>> UpdateAuction([FromBody] Auction auction)
         {
             try
             {
@@ -56,14 +59,14 @@ namespace Aukcionas.Controllers
                 dbAuction.item_mass = auction.item_mass;
                 dbAuction.condition = auction.condition;
                 dbAuction.material = auction.material;
+                dbAuction.username = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 //dbAuction.picture = auction.picture;
 
                 await _dataContext.SaveChangesAsync();
-                CheckIfItemIsBought(auction);
 
                 //await _hubContext.Clients.All.SendAsync("AuctionUpdated", auction);
 
-                return Ok(await _dataContext.Auctions.ToListAsync());
+                return Ok(dbAuction);
             }
             catch (Exception ex)
             {
@@ -138,44 +141,6 @@ namespace Aukcionas.Controllers
             return Ok(await _dataContext.Auctions.ToListAsync());
         }
 
-        [HttpPut("CheckIfItemIsBought")]
-        public async Task<ActionResult<List<Auction>>> CheckIfItemIsBought(Auction auction)// check if new buy now price is larger then last bid
-        {
-            var dbAuction = await _dataContext.Auctions.FindAsync(auction.id);
-            if (dbAuction == null)
-                return BadRequest("Auction not found");
-            var last_bid = dbAuction.bidding_amount_history[^1];
-            if (dbAuction.buy_now_price <= last_bid)
-            {
-                dbAuction.auction_end_time = DateTime.Now;
-                StopAuction(auction);
-                dbAuction.auction_ended = true;
-                dbAuction.auction_won = true; // create seperate function to check if auction just ended or some dude won it(set winned name)
-            }
-
-            return Ok(await _dataContext.Auctions.ToListAsync());
-        }
-        [HttpPut("CheckNewEndTime")]
-        public async Task<ActionResult<List<Auction>>> CheckNewEndTime(Auction auction)//check if new end time is at least set to one hour from now 
-        {
-            var dbAuction = await _dataContext.Auctions.FindAsync(auction.id);
-            if (dbAuction == null)
-                return BadRequest("Auction not found");
-            if (dbAuction.auction_end_time >= DateTime.Now.AddHours(1))
-                return Ok(await _dataContext.Auctions.ToListAsync());
-            else
-                return BadRequest();
-        }
-        [HttpPut("StopAuction")]
-        public async Task<ActionResult<List<Auction>>> StopAuction(Auction auction)// stop auction from live bidding
-        {
-            var dbAuction = await _dataContext.Auctions.FindAsync(auction.id);
-            if (dbAuction == null)
-                return BadRequest("Auction not found");
-            dbAuction.auction_stopped = true;
-            return Ok(await _dataContext.Auctions.ToListAsync());
-        }
-
         [HttpPost("{id}/like")]
         [Authorize(Roles = ForumRoles.ForumUser)]
         [ProducesResponseType(StatusCodes.Status204NoContent, Type = typeof(Auction))]
@@ -196,8 +161,10 @@ namespace Aukcionas.Controllers
                     auction.auction_likes_list.Add(userId);
                     auction.auction_likes++;
                     await _dataContext.SaveChangesAsync();
-
-                    user.Auctions_Won.Add(id);
+                }
+                if(!user.Liked_Auctions.Contains(id))
+                {
+                    user.Liked_Auctions.Add(id);
                     await _userManager.UpdateAsync(user).ConfigureAwait(false);
                 }
 
@@ -229,11 +196,12 @@ namespace Aukcionas.Controllers
                     auction.auction_likes_list.Remove(userId);
                     auction.auction_likes--;
                     await _dataContext.SaveChangesAsync();
-
-                    user.Auctions_Won.Remove(id);
+                }
+                if (user.Liked_Auctions.Contains(id))
+                {
+                    user.Liked_Auctions.Remove(id);
                     await _userManager.UpdateAsync(user).ConfigureAwait(false);
                 }
-
                 return Ok(await _dataContext.Auctions.ToListAsync());
             }
             catch (Exception ex)
@@ -310,22 +278,36 @@ namespace Aukcionas.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
         }
-        [HttpPost("PlaceBid")]
+
+        [HttpGet("payment")]
         [Authorize(Roles = ForumRoles.ForumUser)]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> PlaceBid(int auctionId, double bidAmount)
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public async Task<ActionResult> PaymentPage([FromQuery] string token)
         {
             try
             {
-                await _hubContext.Clients.All.SendAsync("PlaceBid", auctionId, bidAmount);
-                return Ok();
+                var payment = new Payment(_configuration);
+                int auctionId = payment.DecodePaymentToken(token);
+
+                var auction = await _dataContext.Auctions.FindAsync(auctionId);
+
+                if (auction == null)
+                {
+                    return NotFound("Auction not found");
+                }
+                string redirectUrl = $"http://localhost:4200/payment?auctionId={auctionId}";
+
+                return Redirect(redirectUrl);
             }
             catch (Exception ex)
             {
-                _logger.LogError("An error occurred while placing bid: {exception}", ex);
-                return BadRequest("Error placing bid");
+                _logger.LogError("An error occurred while retrieving auction information for payment: {exception}", ex);
+                return StatusCode(500, "Internal Server Error");
             }
         }
+
+
     }
 }

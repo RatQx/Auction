@@ -38,6 +38,7 @@ import { AdminComponent } from './components/admin/admin.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatPaginator } from '@angular/material/paginator';
+import { PaymentComponent } from './components/payment/payment.component';
 
 function initApp(initializer: AppInitializer) {
   return () => initializer.initialize();
@@ -58,6 +59,7 @@ function initApp(initializer: AppInitializer) {
     ConfirmEmailComponent,
     ReportModalComponent,
     AdminComponent,
+    PaymentComponent,
   ],
   imports: [
     MatRadioModule,

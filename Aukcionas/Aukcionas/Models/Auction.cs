@@ -63,8 +63,6 @@ namespace Aukcionas.Models
         public List<string> auction_likes_list { get; set; } = new();
         public List<double> bidding_amount_history { get; set; } = new();
         public List<DateTime> bidding_times_history { get; set; } = new();
-
-        public IFormFile File { get; set; }
         [NotMapped]
         public string? SingedUrl { get; set; }
         public string? SavedUrl { get; set; }

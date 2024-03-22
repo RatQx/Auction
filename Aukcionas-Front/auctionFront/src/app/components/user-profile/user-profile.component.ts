@@ -5,6 +5,8 @@ import { User } from '../../models/user.model';
 import { NgForm } from '@angular/forms';
 import { AuctionService } from '../../services/auction.service';
 
+declare var paypal: any;
+
 @Component({
   selector: 'app-user-profile',
   templateUrl: './user-profile.component.html',
@@ -34,8 +36,9 @@ export class UserProfileComponent implements OnInit {
   }
 
   unlikeAuction(id: number) {
-    console.log(id);
-    this.auctionService.unlikeAuction(id).subscribe((data) => {});
+    this.auctionService.unlikeAuction(id).subscribe((data) => {
+      this.getUserInfo();
+    });
   }
 
   submitForm(): void {

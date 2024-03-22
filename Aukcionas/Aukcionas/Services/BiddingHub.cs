@@ -41,6 +41,7 @@ namespace Aukcionas.Services
                 {
                     return;
                 }
+                await Clients.All.SendAsync("UpdateBid", auctionId, bidAmount);
                 double currentBid = (auction.bidding_amount_history.Count > 0)
                 ? auction.bidding_amount_history.Last()
                 : auction.starting_price;
@@ -52,7 +53,6 @@ namespace Aukcionas.Services
 
                     await _dataContext.SaveChangesAsync();
 
-                    await Clients.All.SendAsync("UpdateBid", auctionId, bidAmount);
                 }
 
             }

@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { LoginRequest } from '../../types/aukcionas.types';
 
+declare const bootstrap: any;
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -23,6 +25,7 @@ export class LoginComponent implements OnInit {
   emailSent = false;
   emailResetInvalid = false;
   displayMessageEmail = '';
+  showNotification = false;
   constructor(private userSerive: UserService, private router: Router) {}
   public form = new FormGroup({
     username: new FormControl('', [Validators.required]),
@@ -71,6 +74,15 @@ export class LoginComponent implements OnInit {
           this.emailResetInvalid = false;
           this.displayMessageEmail =
             'Password reset link was sent to :' + this.resetPasswordEmail;
+          this.showNotification = true;
+          setTimeout(() => {
+            this.showNotification = false;
+          }, 5000);
+          const modalElement = document.getElementById('resetPasswordModal');
+          if (modalElement) {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.hide();
+          }
         },
         (error) => {
           this.emailResetInvalid = true;

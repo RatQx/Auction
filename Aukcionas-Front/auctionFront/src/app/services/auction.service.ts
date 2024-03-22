@@ -57,4 +57,8 @@ export class AuctionService {
   sendUpdateList() {
     return this.updateListSubject.asObservable();
   }
+
+  getAuctionDetailsByToken(token: string): Observable<any> {
+    return this.http.get<any>(`${this.baseApiUrl}/payment?token=${token}`);
+  }
 }

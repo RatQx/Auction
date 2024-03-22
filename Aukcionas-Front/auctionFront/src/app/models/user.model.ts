@@ -7,4 +7,5 @@ export interface User {
   phoneNumber: string;
   auction_won: [];
   liked_auctions: [];
+  can_bid: boolean;
 }

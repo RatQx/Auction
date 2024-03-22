@@ -11,6 +11,7 @@ import { AuctionBidComponent } from './components/auction-bid/auction-bid.compon
 import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.component';
 import { AdminGuard } from './guard/admin.guard';
 import { AdminComponent } from './components/admin/admin.component';
+import { PaymentComponent } from './components/payment/payment.component';
 
 const routes: Routes = [
   { path: 'auction', component: AuctionComponent },
@@ -23,6 +24,7 @@ const routes: Routes = [
   { path: 'reset', component: ResetComponent },
   { path: 'auction-bid/:id', component: AuctionBidComponent },
   { path: 'confirm-email', component: ConfirmEmailComponent },
+  { path: 'payment', component: PaymentComponent },
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'admin', component: AdminComponent, canActivate: [AdminGuard] },
 ];

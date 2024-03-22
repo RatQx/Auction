@@ -13,15 +13,12 @@ import { ReportService } from '../../services/report.service';
 import { BidService } from '../../services/bid.service';
 import { Subscription } from 'rxjs';
 
-declare var paypal: any;
-
 @Component({
   selector: 'app-auction-bid',
   templateUrl: './auction-bid.component.html',
   styleUrls: ['./auction-bid.component.scss'],
 })
 export class AuctionBidComponent implements OnInit {
-  private newBidSubscription!: Subscription;
   auctionId?: number;
   auction: Auction | undefined;
   public timeDiff: string | undefined;
@@ -30,6 +27,7 @@ export class AuctionBidComponent implements OnInit {
   commentForm!: FormGroup;
   isAuthenticated!: boolean;
   private username!: '';
+  canBuyNow = true;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,19 +44,12 @@ export class AuctionBidComponent implements OnInit {
     });
   }
 
-  @ViewChild('paypal', { static: true }) paypalElement!: ElementRef;
-  product = {
-    price: 0.1,
-    description: 'test buy',
-  };
   paidFor = false;
   ngOnInit(): void {
     this.bidService.createBidConnection();
-    this.newBidSubscription = this.bidService
-      .getNewBidObservable()
-      .subscribe((bid) => {
-        this.handleNewBid(bid.auctionId, bid.bidAmount);
-      });
+    this.bidService.getNewBidObservable().subscribe((bid) => {
+      this.handleNewBid(bid.auctionId, bid.bidAmount);
+    });
 
     this.route.params.subscribe((params) => {
       this.auctionId = params['id'];
@@ -78,48 +69,15 @@ export class AuctionBidComponent implements OnInit {
     setInterval(() => {
       this.timeDiff = this.calculateTimeDifference();
     }, 1000);
-    paypal
-      .Buttons({
-        createOrder: (data: any, actions: any) => {
-          return actions.oder.create({
-            purchase_units: [
-              {
-                desription: this.product.description,
-                amount: {
-                  currency_code: 'EUR',
-                  value: this.product.price,
-                },
-              },
-            ],
-          });
-        },
-        onApprove: async (data: any, actions: any) => {
-          const order = await actions.order.capture();
-          this.paidFor = true;
-        },
-        onError: (err: any) => {
-          console.log(err);
-        },
-      })
-      .render(this.paypalElement.nativeElement);
   }
 
   ngOnDestroy(): void {
-    this.newBidSubscription.unsubscribe();
     this.bidService.stopBidConnection();
   }
 
   handleNewBid(auctionId: number, bidAmount: number) {
     if (this.auction && this.auction.id === auctionId) {
-      this.updateBiddingHistory(bidAmount);
-    }
-  }
-
-  updateBiddingHistory(bidAmount: number) {
-    if (this.auction) {
-      this.auction.auction_biders_list!.push(this.username); // update this code. create normal update not based on current user info
-      this.auction.bidding_amount_history!.push(bidAmount); //
-      this.auction.bidding_times_history!.push(new Date()); //
+      this.getAuctionDetails();
     }
   }
 
@@ -251,5 +209,15 @@ export class AuctionBidComponent implements OnInit {
 
   reverseIndexArray(arr: any[]): number[] {
     return Array.from({ length: arr.length }, (_, i) => i).reverse();
+  }
+
+  canBuyNowCalculate() {
+    if (
+      this.auction!.bidding_amount_history![
+        this.auction!.bidding_amount_history!.length - 1
+      ] >= this.auction!.buy_now_price!
+    ) {
+      this.canBuyNow = false;
+    }
   }
 }

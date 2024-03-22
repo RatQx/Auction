@@ -26,6 +26,7 @@
     "@angular/ssr": "^17.1.1",
     "@microsoft/signalr": "^8.0.0",
     "bootstrap": "^5.3.3",
+    "creditcardpayments": "^1.0.3",
     "express": "^4.18.2",
     "jquery": "^3.7.1",
     "ngx-bootstrap": "^12.0.0",
@@ -33,6 +34,7 @@
     "svg-country-flags": "^1.2.10",
     "system-locale": "^0.1.0",
     "tslib": "^2.3.0",
+    "webpack-dev-middleware": "^6.1.2",
     "zone.js": "~0.14.3"
   },
   "devDependencies": {

@@ -3,6 +3,7 @@ using Aukcionas.Auth.Model;
 using Aukcionas.Data;
 using Aukcionas.Services;
 using Aukcionas.Utils.ConfigOptions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -45,11 +46,12 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddSingleton<IEmailService, EmailService>();
 
 builder.Services.AddTransient<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<AuthDbSeeder>();
+builder.Services.AddSingleton<AuctionStatusService>();
+builder.Services.AddHostedService<AuctionStatusChecker>();
 
 builder.Services.AddSwaggerGen();
 builder.Services.Configure<GCSConfigOptions>(builder.Configuration);

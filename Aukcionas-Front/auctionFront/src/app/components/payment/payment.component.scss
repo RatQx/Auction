@@ -1,0 +1,34 @@
+.auction-details {
+  width: 40%;
+  margin: auto;
+}
+
+.auction-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.auction-card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.auction-card-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+}
+
+.auction-label {
+  font-weight: bold;
+  color: #333;
+}
+
+.auction-value {
+  color: #666;
+}

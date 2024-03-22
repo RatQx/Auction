@@ -16,7 +16,7 @@ namespace Aukcionas.Services
         {
             var emailMessage = new MimeMessage();
             var from = _config["EmailConfiguration:From"];
-            emailMessage.From.Add(new MailboxAddress("Reset Password", from));
+            emailMessage.From.Add(new MailboxAddress("Aukcionai info", from));
             emailMessage.To.Add(new MailboxAddress(emailModel.To, emailModel.To));
             emailMessage.Subject = emailModel.Subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)

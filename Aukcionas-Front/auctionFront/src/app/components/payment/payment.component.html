@@ -1,0 +1,52 @@
+<div *ngIf="auction" class="auction-details">
+  <h2>Auction Information</h2>
+  <div class="auction-card">
+    <div class="auction-card-content">
+      <div class="auction-card-item">
+        <span class="auction-label">Name:</span>
+        <span class="auction-value">{{ auction.name }}</span>
+      </div>
+      <div class="auction-card-item">
+        <span class="auction-label">Winning bid:</span>
+        <span class="auction-value"
+          >{{
+            auction.bidding_amount_history![
+              auction.bidding_amount_history!.length - 1
+            ]
+          }}
+          €</span
+        >
+      </div>
+      <div class="auction-card-item">
+        <span class="auction-label">Auction description:</span>
+        <span class="auction-value">{{ auction.description }}</span>
+      </div>
+      <div class="auction-card-item">
+        <span class="auction-label">Country:</span>
+        <span class="auction-value">{{ auction.country }}</span>
+      </div>
+      <div class="auction-card-item">
+        <span class="auction-label">City:</span>
+        <span class="auction-value">{{ auction.city }}</span>
+      </div>
+      <div class="auction-card-item">
+        <span class="auction-label">Item mass:</span>
+        <span class="auction-value">{{ auction.item_mass }}</span>
+      </div>
+      <div class="auction-card-item">
+        <span class="auction-label">Item biuld year:</span>
+        <span class="auction-value">{{ auction.item_build_year }}</span>
+      </div>
+      <div class="auction-card-item">
+        <span class="auction-label">Condition:</span>
+        <span class="auction-value">{{ auction.condition }}</span>
+      </div>
+      <div class="auction-card-item">
+        <span class="auction-label">Material:</span>
+        <span class="auction-value">{{ auction.material }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="PaypalButton"></div>
