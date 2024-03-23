@@ -45,7 +45,7 @@ namespace Aukcionas.Services
 
                         var auctionOwner = await userManager.FindByIdAsync(auction.username);
                             
-                        var payment = new Payment(_configuration);
+                        var payment = new PaymentUtils(_configuration);
                         var emailToken = payment.GeneratePaymentToken(user.Id,auction.id);
 
                         string from = _configuration["EmailConfiguration:From"];

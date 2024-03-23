@@ -64,8 +64,6 @@ namespace Aukcionas.Controllers
 
                 await _dataContext.SaveChangesAsync();
 
-                //await _hubContext.Clients.All.SendAsync("AuctionUpdated", auction);
-
                 return Ok(dbAuction);
             }
             catch (Exception ex)
@@ -117,6 +115,7 @@ namespace Aukcionas.Controllers
         {
             if (ModelState.IsValid && auction != null)
             {
+                auction.username = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 _dataContext.Auctions.Add(auction);
                 await _dataContext.SaveChangesAsync();
                 return Ok(await _dataContext.Auctions.ToListAsync());
@@ -288,7 +287,7 @@ namespace Aukcionas.Controllers
         {
             try
             {
-                var payment = new Payment(_configuration);
+                var payment = new PaymentUtils(_configuration);
                 int auctionId = payment.DecodePaymentToken(token);
 
                 var auction = await _dataContext.Auctions.FindAsync(auctionId);

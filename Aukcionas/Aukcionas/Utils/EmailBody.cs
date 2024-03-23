@@ -1,4 +1,6 @@
-﻿namespace Aukcionas.Utils
+﻿using Aukcionas.Models;
+
+namespace Aukcionas.Utils
 {
     public static class EmailBody
     {
@@ -28,7 +30,7 @@
         </html>
         ";
         }
-        public static string EmailPaymentForUser(string paymentToken, string auctionName, double price)
+        public static string EmailPaymentForUser(string paymentToken, string auctionName, double price)// for user when auction is won
         {
             return $@"<html>
         <body>
@@ -45,7 +47,7 @@
         ";
         }
 
-        public static string EmailAuctionWonForOwner(string auctionName, double price, string auction_winner, int auction_id)
+        public static string EmailAuctionWonForOwner(string auctionName, double price, string auction_winner, int auction_id)// for auction owner when auction is won
         {
             return $@"<html>
         <body>
@@ -64,7 +66,7 @@
         ";
         }
 
-        public static string EmailAuctionEndedForOwner(string auctionName, int auction_id)
+        public static string EmailAuctionEndedForOwner(string auctionName, int auction_id)// for auction owner when auction is finished with no bids or not enough
         {
             return $@"<html>
         <body>
@@ -73,6 +75,49 @@
                 <P>The bids were not enough to meet minimum buy amount. </p><br>
                 <p> For more information check you'r auction page. </p><br>
                 <a href=http://localhost:4200/auction-bid/{auction_id}>Auction page </a><br>
+            </div>
+        </body> 
+        </html>
+        ";
+        }
+
+        public static string EmailAuctionOwnerOnPayment(string auction_email,Payment payment)// for auction winner on successfull payment
+        {
+            return $@"<html>
+        <body>
+            <div>
+                <P>Payment information on auction</p>
+                <P>You'r auction payment was successful. Open link below to view you'r auction.</p>
+                <a href=http://localhost:4200/auction-bid/{payment.Auction_Id}>Auction page </a>
+                <p>Fund for auction soon be trasfered to your account</p></br>
+                <p>This is users shipping address:</p>
+                <p>Address: {payment.Address_Line1}</p>
+                <p>Address line 2 (optional): {payment.Address_Line2}</p>
+                <p>Country: {payment.Country}</p>
+                <p>Postal code: {payment.Postal_Code}</p>
+                <p>Payment amount: {payment.Payment_Amount}</p>
+                <p>Payment time: {payment.Payment_Time}</p>
+                <p>For more information please contact us: {auction_email}</p>
+            </div>
+        </body> 
+        </html>
+        ";
+        }
+
+        public static string EmailAuctionWinnerOnPayment(string auction_email, Payment payment) //for auction owner on succesfful payment
+        {
+            return $@"<html>
+        <body>
+            <div>
+                <P>Payment information</p>
+                <P>This is you'r payment information.</p>
+                <p>Address: {payment.Address_Line1}</p>
+                <p>Address line 2 (optional): {payment.Address_Line2}</p>
+                <p>Country: {payment.Country}</p>
+                <p>Postal code: {payment.Postal_Code}</p>
+                <p>Payment amount: {payment.Payment_Amount}</p>
+                <p>Payment time: {payment.Payment_Time}</p>
+                <p>For more information please contact us: {auction_email}</p>
             </div>
         </body> 
         </html>

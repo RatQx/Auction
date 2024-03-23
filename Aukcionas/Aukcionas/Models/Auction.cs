@@ -59,6 +59,7 @@ namespace Aukcionas.Models
         public int? auction_likes { get; set; }
         public string? username { get; set; }
         public string? auction_winner { get; set; }
+        public Boolean? is_Paid { get; set; }
         public List<string> auction_biders_list { get; set; } = new();
         public List<string> auction_likes_list { get; set; } = new();
         public List<double> bidding_amount_history { get; set; } = new();
@@ -68,6 +69,7 @@ namespace Aukcionas.Models
         public string? SavedUrl { get; set; }
         public string? SavedFileName { get; set; }
         public List<Comment> Comments { get; set; }
+
 
         public Auction()
         {

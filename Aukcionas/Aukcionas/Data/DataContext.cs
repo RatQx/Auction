@@ -13,6 +13,7 @@ namespace Aukcionas.Data
         public DbSet<Auction> Auctions => Set<Auction>();
         public DbSet<Comment> Comments => Set<Comment>();
         public DbSet<Report> Reports => Set<Report>();
+        public DbSet<Payment> Payments => Set<Payment>();
  
        
     }
