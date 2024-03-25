@@ -34,8 +34,42 @@ namespace Aukcionas.Controllers
             _dataContext = dataContext; ;
             _httpClient = httpClient;
         }
+
+        [HttpPost("decode")]
+        [Authorize(Roles = ForumRoles.ForumUser)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public ActionResult<DecodedPaymentToken> DecodeToken([FromBody] string token)
+        {
+            try
+            {
+                var paymentUtils = new PaymentUtils(_configuration);
+                var decodedTokenResult = paymentUtils.DecodePaymentToken(token);
+                var decodedToken = new DecodedPaymentToken();
+                decodedToken.AuctionId = decodedTokenResult.auctionId;
+                decodedToken.UserId = decodedTokenResult.userId;
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == decodedTokenResult.userId)
+                {
+                    return Ok(decodedToken);
+                }
+                else
+                {
+                    return Forbid();
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Failed to decode token: {ex.Message}");
+            }
+        }
+
         [HttpPost("create")]
         [Authorize(Roles = ForumRoles.ForumUser)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public async Task<ActionResult<Payment>> CreatePayment([FromBody] Payment payment)
         {
             if (!ModelState.IsValid)
@@ -53,7 +87,7 @@ namespace Aukcionas.Controllers
             var auction_Owner = await _userManager.FindByIdAsync(auction.username);
             auction.is_Paid = true;
             payment.Buyer_Id = userId;
-            payment.Buyer_Email= user.Email
+            payment.Buyer_Email = user.Email;
             payment.Auction_Owner_Email = auction_Owner.Email;
             _dataContext.Payments.Add(payment);
             _dataContext.SaveChanges();
@@ -62,7 +96,7 @@ namespace Aukcionas.Controllers
             var emailModel = new EmailModel(user.Email, "Payment information", EmailBody.EmailAuctionWinnerOnPayment(from, payment), "Payment information");
             _emailService.SendEmail(emailModel);
 
-            var emailModel2 = new EmailModel(user.Email, "Successful payment on you'r auction", EmailBody.EmailAuctionOwnerOnPayment(from, payment), "Shipping information");
+            var emailModel2 = new EmailModel(auction_Owner.Email, "Successful payment on you'r auction", EmailBody.EmailAuctionOwnerOnPayment(from, payment), "Shipping information");
             _emailService.SendEmail(emailModel2);
 
             try
@@ -89,37 +123,41 @@ namespace Aukcionas.Controllers
             {
                 sender_batch_header = new
                 {
+                    sender_batch_id = Guid.NewGuid().ToString(),
                     recipient_type = "EMAIL",
                     email_subject = "Payment from Your Auction",
                     email_message = "You have received a payment from your auction.",
+                    note = "Note"
                 },
                 items = new[]
                 {
                     new
                     {
                         recipient_type = "EMAIL",
+                        receiver = ownerEmail,
                         amount = new
                         {
-                            value = amount.ToString("0.00"),
+                            value = amount,
                             currency = "EUR"
-                        },
-                        receiver = ownerEmail
+                        }
                     }
                 }
             };
 
             var jsonPayload = JsonSerializer.Serialize(payoutRequest);
             var requestContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-            var response = await _httpClient.PostAsync("https://api.paypal.com/v1/payments/payouts", requestContent);
-
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            var response = await _httpClient.PostAsync("https://api.sandbox.paypal.com/v1/payments/payouts", requestContent);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine(responseContent);
             return response;
         }
 
+
         private async Task<string> GetAccessToken()
         {
-            var clientId = _configuration["PayPal:ClientId"];
-            var clientSecret = _configuration["PayPal:ClientSecret"];
+            var clientId = _configuration["PayPal:ClientIdSandbox"];
+            var clientSecret = _configuration["PayPal:ClientSecretSandbox"];
 
             using (var client = new HttpClient())
             {
@@ -134,7 +172,7 @@ namespace Aukcionas.Controllers
         };
 
                 var requestContent = new FormUrlEncodedContent(requestBody);
-                var response = await client.PostAsync("https://api.paypal.com/v1/oauth2/token", requestContent);
+                var response = await client.PostAsync("https://api.sandbox.paypal.com/v1/oauth2/token", requestContent);
 
                 if (response.IsSuccessStatusCode)
                 {

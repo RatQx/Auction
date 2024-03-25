@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Linq;
 
 namespace Aukcionas.Utils
 {
@@ -28,32 +29,40 @@ namespace Aukcionas.Utils
             return tokenHandler.WriteToken(token);
         }
 
-        public int DecodePaymentToken(string token)
+        public (string userId, int auctionId) DecodePaymentToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_configuration["JWT:Secret"]);
 
-            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            try
             {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validatedToken);
 
-            var jwtToken = (JwtSecurityToken)validatedToken;
+                var jwtToken = (JwtSecurityToken)validatedToken;
 
-            var auctionIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "AuctionId");
-            if (auctionIdClaim != null && int.TryParse(auctionIdClaim.Value, out int auctionId))
-            {
-                return auctionId;
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "nameid")?.Value;
+                var auctionIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "AuctionId")?.Value;
+
+                if (userIdClaim == null || auctionIdClaim == null || !int.TryParse(auctionIdClaim, out int auctionId))
+                {
+                    throw new ArgumentException("Invalid user ID, auction ID, or token is expired");
+                }
+
+                return (userIdClaim, auctionId);
             }
-            else
+            catch (Exception ex)
             {
-                throw new ArgumentException("Invalid auction ID or token is expired");
+                throw new ArgumentException("Failed to decode token", ex);
             }
         }
+
 
     }
 }

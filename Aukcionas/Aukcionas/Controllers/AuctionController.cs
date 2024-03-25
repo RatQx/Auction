@@ -19,12 +19,12 @@ namespace Aukcionas.Controllers
     {
         private readonly DataContext _dataContext;
         private readonly UserManager<ForumRestUser> _userManager;
-        private readonly ILogger<AuthController> _logger;
+        private readonly ILogger<AuctionController> _logger;
         private readonly IHubContext<BiddingHub> _hubContext;
         private readonly IConfiguration _configuration;
 
         //private readonly ICloudStorageService _cloudStorageService;
-        public AuctionController(UserManager<ForumRestUser> userManager,DataContext context, ILogger<AuthController> logger, IConfiguration configuration, IHubContext<BiddingHub> hubContext /**ICloudStorageService cloudStorageService**/)
+        public AuctionController(UserManager<ForumRestUser> userManager,DataContext context, ILogger<AuctionController> logger, IConfiguration configuration, IHubContext<BiddingHub> hubContext /**ICloudStorageService cloudStorageService**/)
         {
             _userManager = userManager;
             _dataContext = context;
@@ -277,36 +277,5 @@ namespace Aukcionas.Controllers
                 return StatusCode(500, "Internal Server Error");
             }
         }
-
-        [HttpGet("payment")]
-        [Authorize(Roles = ForumRoles.ForumUser)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public async Task<ActionResult> PaymentPage([FromQuery] string token)
-        {
-            try
-            {
-                var payment = new PaymentUtils(_configuration);
-                int auctionId = payment.DecodePaymentToken(token);
-
-                var auction = await _dataContext.Auctions.FindAsync(auctionId);
-
-                if (auction == null)
-                {
-                    return NotFound("Auction not found");
-                }
-                string redirectUrl = $"http://localhost:4200/payment?auctionId={auctionId}";
-
-                return Redirect(redirectUrl);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("An error occurred while retrieving auction information for payment: {exception}", ex);
-                return StatusCode(500, "Internal Server Error");
-            }
-        }
-
-
     }
 }

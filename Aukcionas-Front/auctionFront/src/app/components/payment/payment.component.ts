@@ -6,6 +6,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { render } from 'creditcardpayments/creditCardPayments';
 import { Payment } from '../../models/payment.model';
 import { PaymentService } from '../../services/payment.service';
+import { UserService } from '../../services/user.service';
+import { DecodedTokenResult } from '../../models/decoded-token-result.model';
 
 @Component({
   selector: 'app-payment',
@@ -14,7 +16,8 @@ import { PaymentService } from '../../services/payment.service';
 })
 export class PaymentComponent implements OnInit {
   auction!: Auction;
-  auctionId!: number;
+  AuctionId!: number;
+  UserId!: string;
   isLoading: boolean = false;
   isError: boolean = false;
 
@@ -22,42 +25,40 @@ export class PaymentComponent implements OnInit {
     private route: ActivatedRoute,
     private auctionService: AuctionService,
     private router: Router,
-    private paymentService: PaymentService
+    private paymentService: PaymentService,
+    private userService: UserService
   ) {}
   ngOnInit(): void {
     this.route.queryParams.subscribe((params: any) => {
       const token = params['token'];
-      this.auctionId = +params['auctionId'];
-      console.log(this.auctionId);
       if (token) {
-        this.loadAuctionDetails(token);
-      }
-      if (this.auctionId) {
-        this.auctionService.getAuction(this.auctionId).subscribe((auction) => {
-          this.auction = auction;
-          this.configurePayment();
-          console.log(this.auction);
-        });
+        this.decodeToken(token);
       }
     });
   }
-
-  loadAuctionDetails(token: string): void {
-    this.isLoading = true;
-    this.auctionService.getAuctionDetailsByToken(token).subscribe(
-      (auction) => {
-        this.auction = auction;
-        this.isLoading = false;
+  decodeToken(token: string): void {
+    this.paymentService.decodeToken(token).subscribe(
+      (result: DecodedTokenResult) => {
+        console.log('Decoded token:', result);
+        this.AuctionId = result.auctionId;
+        this.GetAuctionDetails(this.AuctionId);
       },
       (error) => {
-        if (error.status === 200) {
-          const redirectUrl = error.url;
-          window.location.href = redirectUrl;
-        } else {
-          console.error(error);
-          this.isLoading = false;
-          this.isError = true;
-        }
+        console.error('Error decoding token:', error);
+      }
+    );
+  }
+  GetAuctionDetails(auctionId: number): void {
+    this.auctionService.getAuction(auctionId).subscribe(
+      (auction: Auction) => {
+        this.auction = auction;
+        this.isLoading = false;
+        this.configurePayment();
+      },
+      (error: any) => {
+        console.error('Error getting auction details:', error);
+        this.isLoading = false;
+        this.isError = true;
       }
     );
   }
@@ -87,8 +88,7 @@ export class PaymentComponent implements OnInit {
   handlePaymentSuccess(details: any): void {
     const paymentId = details.id;
     const paymentTime = new Date(details.create_time);
-    const address = details.purchase_units[0].shipping.address;
-    console.log(address);
+    const address = details.purchase_units[0]?.shipping?.address;
     const email = '';
 
     const payment: Payment = {
@@ -100,12 +100,12 @@ export class PaymentComponent implements OnInit {
           this.auction.bidding_amount_history!.length - 1
         ] || 0,
       Payment_Successful: true,
-      Address_Line1: address.address_line_2,
+      Address_Line1: address.address_line_1,
       Address_Line2: address.address_line_2 || '',
       Country: address.country_code,
       Postal_Code: address.postal_code,
       Buyer_Id: '',
-      Auction_Id: this.auctionId.toString(),
+      Auction_Id: this.AuctionId.toString(),
       Buyer_Email: '',
       Auction_Owner_Email: email.toString(),
     };
