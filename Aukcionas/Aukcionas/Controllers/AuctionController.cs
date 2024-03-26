@@ -115,7 +115,13 @@ namespace Aukcionas.Controllers
         {
             if (ModelState.IsValid && auction != null)
             {
-                auction.username = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(userId);
+                if(user.Bank == null || user.Paypal == null)
+                {
+                    return BadRequest();
+                }
+                auction.username = userId;
                 _dataContext.Auctions.Add(auction);
                 await _dataContext.SaveChangesAsync();
                 return Ok(await _dataContext.Auctions.ToListAsync());

@@ -108,6 +108,7 @@ export class PaymentComponent implements OnInit {
       Auction_Id: this.AuctionId.toString(),
       Buyer_Email: '',
       Auction_Owner_Email: email.toString(),
+      Payment_Currency: 'EUR',
     };
 
     this.paymentService.createPayment(payment).subscribe(

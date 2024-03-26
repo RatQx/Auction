@@ -12,4 +12,5 @@ export interface Payment {
   Auction_Id: string;
   Buyer_Email: string;
   Auction_Owner_Email: string;
+  Payment_Currency: string;
 }

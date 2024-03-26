@@ -138,6 +138,13 @@ namespace Aukcionas.Controllers
                 user.UserName = updatedUserInfo.UserName;
                 user.PhoneNumber = updatedUserInfo.PhoneNumber;
                 user.Surname = updatedUserInfo.Surname;
+                user.Paypal_Email = updatedUserInfo.Paypal.GetValueOrDefault() ? updatedUserInfo.Paypal_Email : null;
+                user.Account_Holder_Name = updatedUserInfo.Bank.GetValueOrDefault() ? updatedUserInfo.Account_Holder_Name : null;
+                user.Account_Number = updatedUserInfo.Bank.GetValueOrDefault() ? updatedUserInfo.Account_Number : null;
+                user.Bank_Name = updatedUserInfo.Bank.GetValueOrDefault() ? updatedUserInfo.Bank_Name : null;
+                user.Bic_Swift_Code = updatedUserInfo.Bank.GetValueOrDefault() ? updatedUserInfo.Bic_Swift_Code : null;
+                user.Paypal = updatedUserInfo.Paypal.GetValueOrDefault() ? true : null;
+                user.Bank = updatedUserInfo.Bank.GetValueOrDefault() ? true : null;
 
                 var result = await _userManager.UpdateAsync(user).ConfigureAwait(false);
 
@@ -200,10 +207,16 @@ namespace Aukcionas.Controllers
                 PhoneNumber = user.PhoneNumber,
                 Auctions_Won = user.Auctions_Won,
                 Liked_Auctions = user.Liked_Auctions,
-                Can_Bid = user.Can_Bid
+                Can_Bid = user.Can_Bid,
+                Paypal = user.Paypal,
+                Bank = user.Bank,
+                Bank_Name = user.Bank_Name,
+                Bic_Swift_Code = user.Bic_Swift_Code,
+                Account_Number = user.Account_Number,
+                Account_Holder_Name = user.Account_Holder_Name,
             };
 
-            return Ok(new { userInfo.Name,userInfo.Email, userInfo.UserName, userInfo.Surname, userInfo.PhoneNumber, userInfo.Auctions_Won, userInfo.Liked_Auctions,userInfo.Can_Bid, userInfo.Id });
+            return Ok(new { userInfo });
         }
         [HttpPost]
         [Route("send-reset-email/{email}")]

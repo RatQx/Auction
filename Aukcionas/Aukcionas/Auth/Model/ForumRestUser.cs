@@ -21,7 +21,20 @@ namespace Aukcionas.Auth.Model
         public DateTime ResetPasswordExpiry { get; set; }
         public string? EmailConfirmationToken { get; set; }
         public DateTime EmailConfirmationTokenExpiry { get; set; }
-
+        [PersonalData]
+        public Boolean?  Paypal { get; set; }
+        [PersonalData]
+        public Boolean? Bank { get; set;}
+        [PersonalData]
+        public string? Paypal_Email { get; set; }
+        [PersonalData]
+        public string? Account_Holder_Name { get; set; }
+        [PersonalData]
+        public string? Account_Number { get; set; }
+        [PersonalData]
+        public string? Bank_Name { get; set; }
+        [PersonalData]
+        public string? Bic_Swift_Code { get; set; }
 
     }
 }

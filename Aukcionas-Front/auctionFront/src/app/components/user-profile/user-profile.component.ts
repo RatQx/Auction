@@ -13,7 +13,23 @@ declare var paypal: any;
   styleUrls: ['./user-profile.component.scss'],
 })
 export class UserProfileComponent implements OnInit {
-  userInfo: any = {};
+  userInfo: User = {
+    userName: '',
+    email: '',
+    name: '',
+    surname: '',
+    phoneNumber: '',
+    auctions_Won: [],
+    liked_Auctions: [],
+    can_Bid: false,
+    paypal: false,
+    bank: false,
+    paypal_Email: '',
+    account_Holder_Name: '',
+    account_Number: '',
+    bank_Name: '',
+    bic_Swift_Code: '',
+  };
   showEditForm: boolean = false;
   showAuctionsWonTable: boolean = false;
   showLikedAuctionsTable: boolean = false;
@@ -27,9 +43,14 @@ export class UserProfileComponent implements OnInit {
   }
 
   getUserInfo(): void {
-    this.userService.getUserInfo().subscribe((data) => {
-      this.userInfo = data;
-    });
+    this.userService.getUserInfo().subscribe(
+      (response: any) => {
+        this.userInfo = response.userInfo;
+      },
+      (error: any) => {
+        console.error('Error fetching user info:', error);
+      }
+    );
   }
   toggleEditForm(): void {
     this.showEditForm = !this.showEditForm;
@@ -50,6 +71,7 @@ export class UserProfileComponent implements OnInit {
         (response) => {
           console.log(response);
           this.toggleEditForm();
+          this.getUserInfo();
         },
         (error) => {
           console.error(error);
@@ -64,5 +86,14 @@ export class UserProfileComponent implements OnInit {
 
   toggleLikedAuctionsTable() {
     this.showLikedAuctionsTable = !this.showLikedAuctionsTable;
+  }
+  onPaymentMethodChange(method: string): void {
+    if (method === 'paypal') {
+      this.userInfo.paypal = true;
+      this.userInfo.bank = false;
+    } else if (method === 'bank') {
+      this.userInfo.bank = true;
+      this.userInfo.paypal = false;
+    }
   }
 }
